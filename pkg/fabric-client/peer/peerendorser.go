@@ -12,6 +12,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/status"
 
 	"github.com/hyperledger/fabric-sdk-go/api/apiconfig"
 	"github.com/hyperledger/fabric-sdk-go/api/apitxn"
@@ -32,6 +33,7 @@ type TransactionProposalError struct {
 	Endorser string
 	Proposal apitxn.TransactionProposal
 	Err      error
+	Status   *status.Status
 }
 
 func newPeerEndorser(target string, certificate string, serverHostOverride string,
@@ -75,10 +77,12 @@ func (p *peerEndorser) ProcessTransactionProposal(proposal apitxn.TransactionPro
 
 	proposalResponse, err := p.sendProposal(proposal)
 	if err != nil {
+		s, _ := status.FromError(err)
 		tpe := TransactionProposalError{
 			Endorser: p.target,
 			Proposal: proposal,
 			Err:      err,
+			Status:   s,
 		}
 		return apitxn.TransactionProposalResult{}, &tpe
 	}

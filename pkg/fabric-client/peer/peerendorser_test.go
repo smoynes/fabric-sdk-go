@@ -16,6 +16,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 
 	"github.com/hyperledger/fabric-sdk-go/api/apiconfig"
 	"github.com/hyperledger/fabric-sdk-go/api/apiconfig/mocks"
@@ -266,6 +267,7 @@ func TestTransactionProposalError(t *testing.T) {
 		Endorser: "1.2.3.4:1000",
 		Proposal: mockTransactionProposal(),
 		Err:      errors.New("error"),
+		Status:   &status.Status{},
 	}
 
 	errText := mockError.Error()
