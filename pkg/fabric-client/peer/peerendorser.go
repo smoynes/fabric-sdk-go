@@ -110,8 +110,19 @@ func (p *peerEndorser) sendProposal(proposal apitxn.TransactionProposal) (*pb.Pr
 	}
 	defer p.releaseConn(conn)
 
-	endorserClient := pb.NewEndorserClient(conn)
-	return endorserClient.ProcessProposal(context.Background(), proposal.SignedProposal)
+	//endorserClient := pb.NewEndorserClient(conn)
+	out := new(pb.ProposalResponse)
+	err = grpc.Invoke(context.Background(), "/protos.Endorser/ProcessProposal", proposal.SignedProposal, out, conn)
+	logger.Warnf("proposal response: %T %+v", out, out)
+	logger.Warnf("proposal err: %T %+v", err, err)
+	logger.Warnf("response: %T %+v", out.GetResponse(), out.GetResponse())
+	logger.Warnf("status: %T %+v", out.GetResponse().GetStatus(), out.GetResponse().GetStatus())
+	logger.Warnf("message: %T %+v", out.GetResponse().GetMessage(), out.GetResponse().GetMessage())
+
+	if err != nil {
+		return out, err
+	}
+	return out, nil
 }
 
 func (tpe TransactionProposalError) Error() string {

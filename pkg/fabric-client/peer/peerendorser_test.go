@@ -276,4 +276,5 @@ func TestTransactionProposalError(t *testing.T) {
 	if !strings.Contains(errText, mockText) {
 		t.Fatalf("Unexpected error")
 	}
+	t.FailNow()
 }
